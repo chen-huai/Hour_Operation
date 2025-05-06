@@ -1,0 +1,162 @@
+﻿特殊开票,内容,备注
+SAP_Date_URL,N:\XM Softlines\6. Personel\5. Personal\Supporting Team\2.财务\2.SAP\1.ODM Data - XM\8.软件数据,文件数据路径
+Invoice_File_URL,N:\XM Softlines\6. Personel\5. Personal\Supporting Team\2.财务\2.SAP\1.ODM Data - XM\2.特殊开票,特殊开票文件路径
+Invoice_File_Name,特殊开票要求2022.xlsx,特殊开票文件名称
+Data数据处理,内容,备注
+成本中心,编号,备注
+CS_Selected,1,"是否默认被选中,1选中，0未选中"
+PHY_Selected,1,"是否默认被选中,1选中，0未选中"
+CHM_Selected,1,"是否默认被选中,1选中，0未选中"
+CS_Cost_Center,48601240,CS成本中心
+CHM_Cost_Center,48601293,CHM成本中心
+PHY_Cost_Center,48601294,PHY成本中心
+计划成本,数值,备注
+Plan_Cost_Parameter,0.9,实际的90%，预留10%利润
+Significant_Digits,0,保留几位有效数值
+Business_Department,CS,"业务部门,名称会用于后续"
+T20,PHY,代表实验室，会用于后续
+T75,CHM,代表实验室，会用于后续
+CS_Hourly_Rate,,客服时薪
+PHY_Hourly_Rate,,物理时薪
+CHM_Hourly_Rate,,化学时薪
+实验室成本比例,数值,备注
+CHM_Cost_Parameter,0.3,给到CHM30%
+PHY_Cost_Parameter,0.3,给到PHY30%
+405_Item_1000,0.5,405分配规则
+405_Item_2000,0.5,405分配规则
+441_Item_1000,0.8,441分配规则
+441_Item_2000,0.2,441分配规则
+430_Item_1000,0.8,430分配规则
+430_Item_2000,0.2,430分配规则
+T20-430-A2,PHY_1000/CHM_2000,T20-430-00/T75-430-00
+T75-441-A2,CHM_1000/PHY_2000,T75-441-00/T20-441-00
+T75-405-A2,CHM_1000/PHY_2000,T75-405-00/T20-405-00
+Max_Hour,8,最大工作时长
+名称,编号,角色
+"Luo, Luca",6160275,Sales
+"Ruan, Nicole",6375183,Sales
+"Zhou, Judith",6160350,Sales
+"Gan, Jasper",6160244,Sales
+"Ma, Ada",6160185,Sales
+"You, Sofia",6375105,Sales
+"Ma, Ella",6160372,CS
+"Huang, May",6160385,CS
+"Ding, Daisy",6160431,CS
+"Lai, Tailor",6375014,CS
+"Jiao, Joyce",6375079,CS
+"Lin, Tina",6375091,CS
+"Chen, Snow",6375095,CS
+"Huang, Mary",6375104,CS
+"You, Sofia",6375105,CS
+"Chen, Frank",6375108,CS
+"Shen, Jewel",6375124,CS
+"Guan, Elaine",6375125,CS
+"Lao, Keely",6375134,CS
+"Lv, Rita",6375135,CS
+"Yang, Stacey",6375142,CS
+"Chen, Eunice",6375162,CS
+"Li, Cathy",6375166,CS
+"Zhang, Judy",6375176,CS
+"Jiang, Season",6375178,CS
+"Wang, Moura",6375179,CS
+"Pan, Peki",6375201,CS
+"Zhang, Wendy",6375210,CS
+"Du, Miley",6375211,CS
+"Qiu, Emily",6375235,CS
+"Qiu, Dora",6375241,CS
+"Lan, Beta",6375268,CS
+"Zhang, Susie",6375274,CS
+"Lai, Suda",6375283,CS
+"Xie, Ann",6375285,CS
+"Chen, Iris",6375287,CS
+"Chen, Autumn",6375293,CS
+"Li, Tracy",6375296,CS
+"Yang, Beauty",6375308,CS
+"Chen, Sarah",6375312,CS
+"Cai, Barry",6375313,CS
+"Kuang, Ryan",6375316,CS
+"Wang, Dylan",6375319,CS
+"Ye, Joy",6375332,CS
+"Liu, Vicky",6375333,CS
+"Lin, Lynne",6375334,CS
+"Liu, Morita",6375336,CS
+"Chen, Kate",6375337,CS
+"Liu, Amber",6375342,CS
+"Huang, Hedy",6375345,CS
+"Liu, Lucas",6375346,CS
+"Kang, Leo",6375348,CS
+"Zhang, Alaia",6375350,CS
+"Peng, Penny",6375351,CS
+"Chen, Franklin",6375357,CS
+"Wei, Wynne",6375358,CS
+"Huang, Even",6375359,CS
+"Zhang, Lexie",6375361,CS
+"Zhao, Raymond",6375363,CS
+"Zhang, Orion",6375364,CS
+"Zhang, Winter",6375365,CS
+"Chen, Travis",6375366,CS
+"Zhang, Leslie",6375367,CS
+"Wang, Andy",6375368,CS
+"Wang, Chris",6375370,CS
+"Yang, Bree",6375371,CS
+"Chen, Nemo",6160291,CHM
+"Xu, Jimmy",6160343,CHM
+"Su, Lucky",6181557,CHM
+"Dai, Jocelyn",6375017,CHM
+"Yang, Alisa",6375038,CHM
+"Zou, Rudi",6375039,CHM
+"Wang, Carry",6375064,CHM
+"Zhang, Lynn",6375089,CHM
+"Wu, Alan",6375092,CHM
+"Li, Jesse",6375093,CHM
+"Ou, Ida",6375112,CHM
+"Miao, Molly",6375158,CHM
+"Ye, Anne",6375182,CHM
+"Zeng, Cris",6375184,CHM
+"Lin, Jenny",6375252,CHM
+"Lin, Lucy",6375253,CHM
+"Chen, Limi",6375275,CHM
+"Chen, Nikki",6375277,CHM
+"Ye, Carter",6375279,CHM
+"Wu, Mindy",6375286,CHM
+"Han, Amy",6375299,CHM
+"Shen, Rocy",6375302,CHM
+"Chen, Bella",6375304,CHM
+"Ke, Coco",6375314,CHM
+"Chen, Helen",6375326,CHM
+"Huang, Edwina",6375330,CHM
+"Ma, Even",6375331,CHM
+"Zhong, Teddy",6375023,PHY
+"Ou, Yedda",6375024,PHY
+"Zhang, Cathy",6375043,PHY
+"Su, Shayne",6375061,PHY
+"Yang, Trison",6375062,PHY
+"Huang, Moon",6375084,PHY
+"Qin, Bruce",6375119,PHY
+"Zheng, Damon",6375122,PHY
+"Ye, Valentine",6375150,PHY
+"Zhang, Dragon",6375177,PHY
+"Zheng, Ariel",6375196,PHY
+"Lu, Esther",6375231,PHY
+"Yang, Miya",6375249,PHY
+"Zhan, Milla",6375271,PHY
+"Lv, Linda",6375273,PHY
+"Zeng, Tim",6375280,PHY
+"Xu, Simba",6375282,PHY
+"Wang, Peter",6375292,PHY
+"Zhou, Sean",6375306,PHY
+"Zeng, Winnie",6375320,PHY
+"Chen, Echo",6375321,PHY
+"Yu, Coley",6375323,PHY
+"Chen, Leah",6375324,PHY
+"Ji, Sunny",6375329,PHY
+"Li, Roy",6375339,PHY
+"Liu, Josie",6375341,PHY
+"Zhang, Yvette",6375349,PHY
+"Lin, Charlotte",6375354,PHY
+"Pan, James",6375355,PHY
+"Yan, Alex",6375356,PHY
+"Lin, Carl",6375360,PHY
+"Xiao, Dennis",6375362,PHY
+"Cheng, Ethan",6375369,PHY
+"Chen, Jacy",6375372,PHY
