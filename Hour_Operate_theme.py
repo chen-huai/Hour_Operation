@@ -43,8 +43,8 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         toggle_button = QPushButton("Toggle Theme")
         toggle_button.clicked.connect(self.theme_manager.toggle_theme)
         layout.addWidget(toggle_button)
-        
 
+        self.setMinimumSize(1200, 750)
 
         self.actionExport.triggered.connect(self.exportConfig)
         self.actionImport.triggered.connect(self.importConfig)
