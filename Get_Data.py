@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-from Excel_Field_Mapper import excel_field_mapper
 
 class Get_Data():
     # def __init__(self,fileDataUrl):
@@ -10,21 +9,6 @@ class Get_Data():
         # self.getIndexNumForHead()
         # self.getFileDataList()
 
-    def getFileData(self, fileDataUrl):
-        self.fileDataUrl = fileDataUrl
-        fileType = self.fileDataUrl.split(".")[-1]
-        if fileType == 'xlsx':
-            self.fileData = pd.read_excel(self.fileDataUrl)
-            # self.fileData = pd.read_excel(self.fileDataUrl, dtype='str')
-            # self.fileData = pd.read_excel(self.fileDataUrl, keep_default_na=False)
-        elif fileType == 'csv':
-            self.fileData = pd.read_csv(self.fileDataUrl)
-            # self.fileData = pd.read_csv(self.fileDataUrl, dtype='str')
-            # self.fileData = pd.read_csv(self.fileDataUrl, keep_default_na=False)
-        height, width = self.fileData.shape
-
-        self.fileData = excel_field_mapper.transform_dataframe(self.fileData)
-        return self.fileData
 
     def getFileTableData(self, fileDataUrl):
         self.fileDataUrl = fileDataUrl
