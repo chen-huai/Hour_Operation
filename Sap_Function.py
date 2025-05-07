@@ -818,6 +818,46 @@ class Sap():
         self.application = None
         self.SapGuiAuto = None
 
+    def login_hour_gui(self, hour_data):
+        res = {}
+        res['flag'] = 1
+        res['msg'] = ''
+        try:
+            self.session.findById("wnd[0]/tbar[0]/okcd").text = "/NZRU1"
+            self.session.findById("wnd[0]").sendVKey(0)
+            self.session.findById("wnd[0]/usr/ctxtZRUCKD-PERNR").text = hour_data['staff_id']
+            self.session.findById("wnd[0]/usr/txtZRUCKD-KWEEK").text = hour_data['week']
+            self.session.findById("wnd[0]/usr/txtZRUCKD-KWEEK").setFocus
+            self.session.findById("wnd[0]/usr/txtZRUCKD-KWEEK").caretPosition = 2
+            self.session.findById("wnd[0]").sendVKey(0)
+        except Exception as msg:
+            res['flag'] = 0
+            res['msg'] = "Hour界面失败，%s" % msg
+        return res
+
+    def recording_hours(self, hour_data, row_num=0):
+        res = {}
+        res['flag'] = 1
+        res['msg'] = ''
+        try:
+            row_num = row_num
+            while self.session.findById("wnd[0]/tbar[0]/okcd").text != '':
+                row_num += 1
+            self.session.findById(f"wnd[0]/usr/tblZIIZRUECKMELD00DYNPRO200/txtZRUCKDS-DATUMK[2,{row_num}]").text = hour_data['allocated_day']
+            self.session.findById(f"wnd[0]/usr/tblZIIZRUECKMELD00DYNPRO200/ctxtZRUCKDS-BEARBAUFNR[3,{row_num}]").text = hour_data['order_no']
+            self.session.findById(f"wnd[0]/usr/tblZIIZRUECKMELD00DYNPRO200/txtZRUCKDS-UEPOS[4,{row_num}]").text = hour_data['item']
+            self.session.findById(f"wnd[0]/usr/tblZIIZRUECKMELD00DYNPRO200/ctxtZRUCKDS-ZZTAETIGNR[9,{row_num}]").text = hour_data['material_code']
+            # self.session.findById(f"wnd[0]/usr/tblZIIZRUECKMELD00DYNPRO200/ctxtZRUCKDS-ZZTAETIGNR[9,{row_num}]").setFocus
+            self.session.findById(f"wnd[0]/usr/tblZIIZRUECKMELD00DYNPRO200/txtZRUCKDS-PZEIT[13,{row_num}]").text = hour_data['allocated_hours']
+            self.session.findById(f"wnd[0]/usr/tblZIIZRUECKMELD00DYNPRO200/txtZRUCKDS-BZEIT[15,{row_num}]").text = hour_data['office_time']
+            # self.session.findById(f"wnd[0]/usr/tblZIIZRUECKMELD00DYNPRO200/txtZRUCKDS-BZEIT[15,{row_num}]").setFocus
+            self.session.findById(f"wnd[0]/usr/tblZIIZRUECKMELD00DYNPRO200/txtZRUCKDS-BZEIT[15,{row_num}]").caretPosition = 1
+        except Exception as msg:
+            res['flag'] = 0
+            res['msg'] = "录Hour失败，%s" % msg
+        return res
+
+
 # if __name__ == "__main__":
 #     revenue = 230
 #     guiData = {}
