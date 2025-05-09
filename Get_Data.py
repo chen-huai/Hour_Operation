@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import ast
 
 class Get_Data():
     # def __init__(self,fileDataUrl):
@@ -118,6 +119,96 @@ class Get_Data():
                 'combine_row_msg': '\n'.join(data['row_msg'].unique()),
             }
             )
+
+
+
+
+
+    # field_mapping = {
+    #     'staff_id': 'Personnel Number',
+    #     'week': 'week',
+    #     'order_no': 'SAP Order No.',
+    #     'allocated_hours': 'Inspection/On Site Time (H)',
+    #     'office_time': 'Office Time (H)',
+    #     'material_code': 'department',
+    #     'item': 'Item No.',
+    #     'allocated_day': 'Date',
+    #     'staff_name': 'name',
+    # }
+    #
+
+    # required_fields = {
+    #     'staff_id': 'staff_id',
+    #     'week': 'week',
+    #     'order_no': 'order_no',
+    #     'allocated_hours': 'allocated_hours',
+    #     'office_time': 'office_time',
+    #     'material_code': 'material_code',
+    #     'item': 'item',
+    #     'allocated_day': 'allocated_day',
+    #     'staff_name': 'staff_name',
+    # }
+    def rename_hour_fields(self, data, required_fields=None):
+        """
+        重命名工时数据字段，如果字段不存在则创建空字段
+        """
+        # 定义所需的标准字段
+        # required_fields = {
+        #     'staff_id': 'staff_id',
+        #     'week': 'week',
+        #     'order_no': 'order_no',
+        #     'allocated_hours': 'allocated_hours',
+        #     'office_time': 'office_time',
+        #     'material_code': 'material_code',
+        #     'item': 'item',
+        #     'allocated_day': 'allocated_day',
+        #     'staff_name': 'staff_name',
+        # }
+        str_data = required_fields
+        required_fields = ast.literal_eval(str_data)
+
+        # 创建新的DataFrame，包含所有必需字段
+        new_data = pd.DataFrame()
+
+        # 遍历所需字段，如果原数据中有则重命名，没有则创建空列
+        for old_field, new_field in required_fields.items():
+            if old_field in data.columns:
+                new_data[new_field] = data[old_field]
+            else:
+                new_data[new_field] = None
+
+        # 保留原数据中的其他列
+        for col in data.columns:
+            if col not in required_fields:
+                new_data[col] = data[col]
+        
+        # 使用pandas的sort_values方法直接排序
+        if 'staff_id' in new_data.columns and 'week' in new_data.columns:
+            new_data = new_data.sort_values(['staff_id', 'week'])
+
+        return new_data
+
+
+    def group_hour_data(self, data):
+        """
+        根据staff_id和week整理数据
+        """
+        # 确保数据已经重命名
+        if 'staff_id' not in data.columns or 'week' not in data.columns:
+            data = self.rename_hour_fields(data)
+
+        # 按staff_id和week分组
+        grouped_data = data.groupby(['staff_id', 'week']).agg({
+            'order_no': lambda x: list(x),
+            'hours': 'sum',
+            'department': 'first',
+            'project': lambda x: list(x),
+            'description': lambda x: list(x)
+        }).reset_index()
+
+        return grouped_data
+
+
 
 
 # data = {
