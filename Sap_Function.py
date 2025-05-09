@@ -841,7 +841,7 @@ class Sap():
         res['msg'] = ''
         try:
             row_num = row_num
-            while self.session.findById("wnd[0]/tbar[0]/okcd").text != '':
+            while self.session.findById(f"wnd[0]/usr/tblZIIZRUECKMELD00DYNPRO200/txtZRUCKDS-DATUMK[2,{row_num}]").text != '':
                 row_num += 1
             self.session.findById(f"wnd[0]/usr/tblZIIZRUECKMELD00DYNPRO200/txtZRUCKDS-DATUMK[2,{row_num}]").text = hour_data['allocated_day']
             self.session.findById(f"wnd[0]/usr/tblZIIZRUECKMELD00DYNPRO200/ctxtZRUCKDS-BEARBAUFNR[3,{row_num}]").text = hour_data['order_no']
@@ -857,6 +857,40 @@ class Sap():
             res['msg'] = "录Hour失败，%s" % msg
         return res
 
+    def save_hours(self):
+        res = {}
+        res['flag'] = 1
+        res['msg'] = ''
+        try:
+            self.session.findById("wnd[0]/tbar[0]/btn[11]").press()
+            self.session.findById("wnd[1]/usr/btnSPOP-OPTION1").press()
+   
+        except Exception as msg:
+            max_retries = 14  # 最大重试次数
+            retry_count = 0
+            while retry_count < max_retries:
+                try:
+                    # 回车
+                    self.session.findById("wnd[0]").sendVKey(0)
+                    # # 勾选弹窗，勾选弹窗最后一步会直接保存
+                    # self.session.findById("wnd[1]/tbar[0]/btn[0]").press()
+                    self.session.findById("wnd[0]").sendVKey(0)
+                    saveMessageText = self.session.findById("wnd[0]/sbar/pane[0]").text
+                    if 'Fixed price item is allready fully invoiced' in saveMessageText:
+                        continue
+                    elif 'Data was saved' in saveMessageText:
+                        res['msg'] = '录Hour成功'
+                        break
+                    else:
+                        self.session.findById("wnd[0]/tbar[0]/btn[11]").press()
+                        self.session.findById("wnd[1]/usr/btnSPOP-OPTION1").press()
+                        break
+                except:
+                    retry_count += 1
+                    if retry_count >= max_retries:
+                        raise Exception(f"保存失败，已重试{max_retries}次: {str(e)}")
+                    continue
+        return res
 
 # if __name__ == "__main__":
 #     revenue = 230
