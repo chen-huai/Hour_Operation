@@ -52,9 +52,9 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.actionHelp.triggered.connect(self.showVersion)
         self.actionAuthor.triggered.connect(self.showAuthorMessage)
         self.theme_manager.set_theme("blue")  # 设置默认主题
-        # self.pushButton_78.clicked.connect(self.sapOperate)
-        # self.pushButton_79.clicked.connect(self.sapOperate)
-        # self.checkBox_26.toggled.connect(lambda: self.pdfNameRule('Client Contact Name', 'invoice'))
+        self.pushButton_78.clicked.connect(lambda: self.getHourFile(configContent['Hour_Files_Import_URL']))
+        self.pushButton_79.clicked.connect(self.hourOperate)
+        self.pushButton.clicked.connect(lambda: self.viewOdmData(self.lineEdit_31.text()))
         self.filesUrl = []
 
     def init_theme_action(self):
@@ -153,6 +153,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         configContent = [
             ['Hour_Files_Import_URL', "N:\\XM Softlines\\6. Personel\\5. Personal\\Supporting Team\\2.财务\\2.SAP\\1.ODM Data - XM\\3.Hours",'Invoice文件导入路径'],
             ['Hour_Files_Export_URL', "N:\\XM Softlines\\6. Personel\\5. Personal\\Supporting Team\\2.财务\\2.SAP\\1.ODM Data - XM\\3.Hours",'Invoice文件导入路径'],
+            ['Hour_Field_Mapping', "{'staff_id': 'staff_id','week': 'week','order_no': 'order_no','allocated_hours': 'allocated_hours','office_time':'office_time','material_code': 'material_code','item': 'item','allocated_day': 'allocated_day','staff_name': 'staff_name'}",'对应字段映射'],
         ]
         config = np.array(configContent)
         df = pd.DataFrame(config)
@@ -196,8 +197,6 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         amount = float(self.doubleSpinBox_2.text())
         self.doubleSpinBox_4.setValue(amount * 1.06)
 
-
-
     # 获取文件
     def getFile(self, path):
         selectBatchFile = QFileDialog.getOpenFileName(self, '选择ODM导出文件',
@@ -206,7 +205,15 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         fileUrl = selectBatchFile[0]
         return fileUrl
 
-
+    def getHourFile(self, path):
+        fileUrl = self.getFile(path)
+        if fileUrl:
+            self.lineEdit_31.setText(fileUrl)
+            self.textBrowser_4.append("文件路径获取成功")
+            return fileUrl
+        else:
+            self.textBrowser_4.append("未选择文件")
+            return None
 
     # 查看SAP操作数据详情
     def viewOdmData(self, path):
@@ -215,6 +222,169 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         df = odm_data_obj.getFileTableData(fileUrl)
         myTable.createTable(df)
         myTable.showMaximized()
+
+    def hourOperate(self):
+        """
+        处理工时数据并进行SAP操作
+        """
+
+        time_str = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        log_file = os.path.join(configContent['Hour_Files_Export_URL'], f'log_{time_str}.xlsx')
+        columns = [
+            'timestamp',
+            'staff_id',
+            'week',
+            'order_no',
+            'allocated_hours',
+            'office_time',
+            'material_code',
+            'item',
+            'allocated_day',
+            'staff_name',
+            'status',
+            'message',
+            'Update'
+        ]
+        logger = Logger(log_file=log_file, columns=columns)
+        try:
+            # 获取文件路径
+            hour_path = self.lineEdit_31.text()
+            if not hour_path:
+                QMessageBox.warning(self, "警告", "请先选择工时文件！")
+                return
+
+            log_data = []  # 用于存储日志数据
+            
+            # 获取并处理数据
+            get_data = Get_Data()
+            raw_data = get_data.getFileTableData(hour_path)
+            
+            # 重命名字段
+            renamed_data = get_data.rename_hour_fields(raw_data, configContent['Hour_Field_Mapping'])
+            
+            # # 按staff_id和week分组
+            # grouped_data = get_data.group_hour_data(renamed_data)
+            
+            # 初始化SAP操作对象
+            sap = Sap()
+            
+            # 记录当前处理的staff_id和week
+            current_staff_id = None
+            current_week = None
+            is_first_login = True  # 标记是否是第一次登录
+            
+            # 遍历分组后的数据
+            for _, row in renamed_data.iterrows():
+                staff_id = row['staff_id']
+                week = row['week']
+                
+                # 如果staff_id或week发生变化，需要重新登录
+                if staff_id != current_staff_id or week != current_week:
+                    # 如果不是第一次登录，需要先保存之前的工时
+                    if not is_first_login:
+                        if not sap.save_hours():
+                            error_msg = f"保存工时失败！Staff ID: {current_staff_id}, Week: {current_week}"
+                            # logger.error(error_msg)
+                            log_data.append({
+                                'timestamp': datetime.datetime.now(),
+                                'staff_id': current_staff_id,
+                                'week': current_week,
+                                'status': 'Failed',
+                                'message': error_msg
+                            })
+                            continue
+                    
+                    # 登录SAP
+                    if not sap.login_hour_gui(row):
+                        error_msg = f"登录SAP失败！Staff ID: {staff_id}, Week: {week}"
+                        # logger.error(error_msg)
+                        log_data.append({
+                            'timestamp': datetime.datetime.now(),
+                            'staff_id': staff_id,
+                            'week': week,
+                            'status': 'Failed',
+                            'message': error_msg
+                        })
+                        continue
+                    
+                    current_staff_id = staff_id
+                    current_week = week
+                    is_first_login = False
+                
+                # 记录工时
+                try:
+                    # 准备工时数据
+                    # hour_data = {
+                    #     'staff_id': staff_id,
+                    #     'week': week,
+                    #     'order_no': row['order_no'],
+                    #     'hours': row['hours'],
+                    #     'department': row['department'],
+                    #     'project': row['project'],
+                    #     'description': row['description']
+                    # }
+                    hour_data = row
+                    # 调用recording_hours方法记录工时
+                    if not sap.recording_hours(hour_data):
+                        error_msg = f"记录工时失败！Staff ID: {staff_id}, Week: {week}"
+                        # logger.error(error_msg)
+                        log_data.append({
+                            'timestamp': datetime.datetime.now(),
+                            'staff_id': staff_id,
+                            'week': week,
+                            'status': 'Failed',
+                            'message': error_msg
+                        })
+                        continue
+                    
+                    success_msg = f"成功处理 Staff ID: {staff_id}, Week: {week} 的工时数据"
+                    # logger.info(success_msg)
+                    log_data.append({
+                        'timestamp': datetime.datetime.now(),
+                        'staff_id': staff_id,
+                        'week': week,
+                        'status': 'Success',
+                        'message': success_msg
+                    })
+                    
+                    self.textBrowser_4.append(success_msg)
+                    
+                except Exception as e:
+                    error_msg = f"处理工时数据时出错: {str(e)}"
+                    # logger.error(error_msg)
+                    log_data.append({
+                        'timestamp': datetime.datetime.now(),
+                        'staff_id': staff_id,
+                        'week': week,
+                        'status': 'Failed',
+                        'message': error_msg
+                    })
+                    continue
+            
+            # 最后一次保存
+            if not is_first_login:
+                if not sap.save_hours():
+                    error_msg = f"最后一次保存工时失败！Staff ID: {current_staff_id}, Week: {current_week}"
+                    # logger.error(error_msg)
+                    log_data.append({
+                        'timestamp': datetime.datetime.now(),
+                        'staff_id': current_staff_id,
+                        'week': current_week,
+                        'status': 'Failed',
+                        'message': error_msg
+                    })
+            
+            # 将日志数据保存为Excel文件
+            log_df = pd.DataFrame(log_data)
+            log_file_path = os.path.join(os.path.dirname(hour_path), f'hour_operation_log_{datetime.datetime.now().strftime("%Y%m%d_%H%M%S")}.xlsx')
+            log_df.to_excel(log_file_path, index=False)
+            
+            QMessageBox.information(self, "完成", f"所有工时数据处理完成！\n日志文件保存在：{log_file_path}")
+            
+        except Exception as e:
+            error_msg = f"处理过程中出现错误: {str(e)}"
+            # logger.error(error_msg)
+            QMessageBox.critical(self, "错误", error_msg)
 
 
 
